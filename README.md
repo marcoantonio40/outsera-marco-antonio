@@ -20,7 +20,6 @@ application/port/out/     Contratos para dependências externas
 application/service/      Implementação dos casos de uso
 adapter/in/web/           Adaptador HTTP
 adapter/out/persistence/  Adaptador JPA/H2
-adapter/out/csv/          Importação inicial do CSV
 ```
 
 ## Como executar
@@ -31,13 +30,33 @@ Na pasta do projeto:
 mvn spring-boot:run
 ```
 
-Na inicialização, a aplicação lê `src/main/resources/Movielist.csv` e carrega os filmes no banco H2 em memória.
+Abra `http://localhost:8080` para acessar o Swagger UI. Use o endpoint `POST /api/v1/awards/upload` para selecionar e enviar o CSV pela interface interativa. A aplicação começa sem dados; cada arquivo válido substitui a importação anterior e a resposta exibe os resultados calculados.
+
+O CSV deve usar `;` como separador e conter as colunas `year`, `title`, `studios`, `producers` e `winner`. A coluna `winner` aceita `yes`, `no` ou valor vazio. O limite de upload é 10 MB.
 
 ## Endpoint
+
+Documentação interativa:
+
+```text
+http://localhost:8080
+http://localhost:8080/swagger-ui/index.html
+```
+
+Endpoints disponíveis no Swagger:
 
 ```http
 GET http://localhost:8080/api/v1/awards/intervals
 ```
+
+O arquivo também pode ser enviado pela API:
+
+```http
+POST http://localhost:8080/api/v1/awards/upload
+Content-Type: multipart/form-data
+```
+
+O campo multipart deve se chamar `file`. Em caso de sucesso, a API retorna os intervalos no mesmo formato do endpoint de consulta. Os erros retornam `status`, `error` e `message`: CSV inválido retorna `400`, extensão diferente de `.csv` retorna `415` e arquivo acima de 10 MB retorna `413`.
 
 Exemplo de resposta:
 
@@ -68,7 +87,7 @@ Exemplo de resposta:
 mvn test
 ```
 
-Os testes iniciam a aplicação com o H2, verificam a carga do CSV e validam os resultados retornados pela API.
+Os testes verificam o upload de um CSV válido, os resultados calculados e a resposta para um arquivo inválido.
 
 ## Registro de uso de IA
 
