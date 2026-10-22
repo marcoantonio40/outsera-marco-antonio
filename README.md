@@ -9,6 +9,20 @@ API REST para consultar os produtores com o menor e o maior intervalo entre prê
 
 O H2 é embarcado e executado em memória; não é necessário instalar ou configurar um banco de dados.
 
+## Arquitetura
+
+O projeto segue arquitetura hexagonal. O domínio e os casos de uso ficam independentes de HTTP e persistência; as portas definem as operações necessárias, e os adaptadores conectam essas portas ao Spring MVC, ao JPA/H2 e ao CSV.
+
+```text
+domain/                   Modelos e regras de domínio
+application/port/in/      Casos de uso oferecidos pela aplicação
+application/port/out/     Contratos para dependências externas
+application/service/      Implementação dos casos de uso
+adapter/in/web/           Adaptador HTTP
+adapter/out/persistence/  Adaptador JPA/H2
+adapter/out/csv/          Importação inicial do CSV
+```
+
 ## Como executar
 
 Na pasta do projeto:
