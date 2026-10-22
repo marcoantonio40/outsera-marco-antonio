@@ -1,6 +1,7 @@
 package com.outsera.awards;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -37,7 +38,16 @@ class ProducerIntervalIntegrationTest {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paths['/api/v1/awards/upload']").exists())
-                .andExpect(jsonPath("$.paths['/api/v1/awards/intervals']").exists());
+                .andExpect(jsonPath("$.paths", aMapWithSize(1)))
+                .andExpect(jsonPath("$.paths['/api/v1/awards/upload'].post").exists())
+                .andExpect(jsonPath(
+                        "$.paths['/api/v1/awards/upload'].post.requestBody.content['multipart/form-data']"
+                                + ".schema.properties.file.type").value("string"))
+                .andExpect(jsonPath(
+                        "$.paths['/api/v1/awards/upload'].post.requestBody.content['multipart/form-data']"
+                                + ".schema.properties.file.format").value("binary"));
+        mockMvc.perform(get("/api/v1/awards/intervals"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

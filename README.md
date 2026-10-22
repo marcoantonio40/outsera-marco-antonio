@@ -1,6 +1,6 @@
 # Raspberry Awards API
 
-API REST para consultar os produtores com o menor e o maior intervalo entre prêmios consecutivos na categoria Pior Filme do Golden Raspberry Awards.
+API REST para calcular os menores e maiores intervalos entre prêmios consecutivos na categoria Pior Filme do Golden Raspberry Awards, a partir de um CSV enviado pelo usuário.
 
 ## Requisitos
 
@@ -30,7 +30,7 @@ Na pasta do projeto:
 mvn spring-boot:run
 ```
 
-Abra `http://localhost:8080` para acessar o Swagger UI. Use o endpoint `POST /api/v1/awards/upload` para selecionar e enviar o CSV pela interface interativa. A aplicação começa sem dados; cada arquivo válido substitui a importação anterior e a resposta exibe os resultados calculados.
+Abra `http://localhost:8080` para acessar o Swagger UI. A API possui um único endpoint: `POST /api/v1/awards/upload`. Selecione o arquivo CSV no Swagger e execute a requisição para receber os resultados. A aplicação começa sem dados; cada arquivo válido substitui a importação anterior.
 
 O CSV deve usar `;` como separador e conter as colunas `year`, `title`, `studios`, `producers` e `winner`. A coluna `winner` aceita `yes`, `no` ou valor vazio. O limite de upload é 10 MB.
 
@@ -43,20 +43,12 @@ http://localhost:8080
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Endpoints disponíveis no Swagger:
-
-```http
-GET http://localhost:8080/api/v1/awards/intervals
-```
-
-O arquivo também pode ser enviado pela API:
-
 ```http
 POST http://localhost:8080/api/v1/awards/upload
 Content-Type: multipart/form-data
 ```
 
-O campo multipart deve se chamar `file`. Em caso de sucesso, a API retorna os intervalos no mesmo formato do endpoint de consulta. Os erros retornam `status`, `error` e `message`: CSV inválido retorna `400`, extensão diferente de `.csv` retorna `415` e arquivo acima de 10 MB retorna `413`.
+O campo multipart deve se chamar `file`. Em caso de sucesso, o endpoint retorna os intervalos calculados. Os erros retornam `status`, `error` e `message`: CSV inválido retorna `400`, extensão diferente de `.csv` retorna `415` e arquivo acima de 10 MB retorna `413`.
 
 Exemplo de resposta:
 
