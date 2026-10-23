@@ -48,7 +48,24 @@ POST http://localhost:8080/api/v1/awards/upload
 Content-Type: multipart/form-data
 ```
 
-O campo multipart deve se chamar `file`. Em caso de sucesso, o endpoint retorna os intervalos calculados. Os erros retornam `status`, `error` e `message`: CSV inválido retorna `400`, extensão diferente de `.csv` retorna `415` e arquivo acima de 10 MB retorna `413`.
+O campo multipart deve se chamar `file`. O endpoint retorna os seguintes códigos:
+
+| Código HTTP | Situação | Resposta |
+|---|---|---|
+| `200 OK` | CSV válido processado | JSON com os intervalos mínimo e máximo calculados |
+| `400 Bad Request` | Arquivo vazio, ausente ou CSV inválido | JSON com `status`, `error` e `message` |
+| `413 Payload Too Large` | Arquivo acima do limite de 10 MB | JSON com `status`, `error` e `message` |
+| `415 Unsupported Media Type` | Arquivo sem extensão `.csv` | JSON com `status`, `error` e `message` |
+
+Exemplo de resposta de erro:
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "O CSV deve conter as colunas year, title, studios, producers e winner."
+}
+```
 
 Exemplo de resposta:
 
