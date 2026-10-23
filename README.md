@@ -32,6 +32,8 @@ mvn spring-boot:run
 
 Abra `http://localhost:8080` para acessar o Swagger UI. A API possui um único endpoint: `POST /api/v1/awards/upload`. Selecione o arquivo CSV no Swagger e execute a requisição para receber os resultados. A aplicação começa sem dados; cada arquivo válido substitui a importação anterior.
 
+O nome original do arquivo enviado também é armazenado junto a cada filme importado.
+
 O CSV deve usar `;` como separador e conter as colunas `year`, `title`, `studios`, `producers` e `winner`. A coluna `winner` aceita `yes`, `no` ou valor vazio. O limite de upload é 10 MB.
 
 ## Endpoint

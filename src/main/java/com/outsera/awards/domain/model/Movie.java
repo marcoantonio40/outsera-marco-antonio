@@ -5,5 +5,6 @@ public record Movie(
         String title,
         String studios,
         String producers,
-        boolean winner) {
+        boolean winner,
+        String fileName) {
 }

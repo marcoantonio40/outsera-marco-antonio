@@ -53,7 +53,12 @@ public class UploadController {
 
         }
 
-        List<Movie> movies = movieCsvParser.parse(file);
+        log.info("UPC-UP-03", "Inciar o parse do aqruivo", Map.of("Nome do arquivo", filename));
+
+        List<Movie> movies = movieCsvParser.parse(file, filename);
+
+        log.info("UPC-UP-04", "Inciar o parse do aqruivo", Map.of("Nome do arquivo", filename));
+
         return ProducerIntervalsResponse.from(importMovies.importMovies(movies));
     }
 }

@@ -22,7 +22,7 @@ public class MovieCsvParser {
     private static final Set<String> REQUIRED_HEADERS =
             Set.of("year", "title", "studios", "producers", "winner");
 
-    public List<Movie> parse(MultipartFile file) {
+    public List<Movie> parse(MultipartFile file, String fileName) {
         List<Movie> movies = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), 1)) {
@@ -48,7 +48,7 @@ public class MovieCsvParser {
                     if (record.size() != headers.size()) {
                         throw badCsv("O CSV contém uma linha com quantidade inválida de colunas.");
                     }
-                    movies.add(parseMovie(record));
+                    movies.add(parseMovie(record, fileName));
                 }
             }
         } catch (IOException exception) {
@@ -65,7 +65,7 @@ public class MovieCsvParser {
         return movies;
     }
 
-    private Movie parseMovie(CSVRecord record) {
+    private Movie parseMovie(CSVRecord record, String fileName) {
         int year = Integer.parseInt(record.get("year").trim());
         String title = record.get("title").trim();
         String studios = record.get("studios").trim();
@@ -81,7 +81,7 @@ public class MovieCsvParser {
             throw badCsv("A coluna winner deve conter yes, no ou ficar vazia.");
         }
         return new Movie(
-                year, title, studios, producers, "yes".equalsIgnoreCase(winnerValue));
+                year, title, studios, producers, "yes".equalsIgnoreCase(winnerValue), fileName);
     }
 
     private UploadException badCsv(String message) {

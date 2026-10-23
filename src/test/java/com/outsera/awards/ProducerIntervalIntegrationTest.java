@@ -71,13 +71,17 @@ class ProducerIntervalIntegrationTest {
                 .andExpect(jsonPath("$.max[0].followingWin").value(2015));
 
             org.assertj.core.api.Assertions.assertThat(movieRepository.count()).isEqualTo(206);
+            org.assertj.core.api.Assertions.assertThat(movieRepository.findAll())
+                    .allSatisfy(movie -> org.assertj.core.api.Assertions.assertThat(movie.getFileName())
+                            .isEqualTo("Movielist.csv"));
         }
     }
 
     @Test
     void rejectsInvalidCsvWithoutChangingPreviouslyImportedMovies() throws Exception {
         movieRepository.save(new com.outsera.awards.adapter.out.persistence.MovieEntity(
-                new com.outsera.awards.domain.model.Movie(2000, "Film", "Studio", "Producer", true)));
+                new com.outsera.awards.domain.model.Movie(
+                        2000, "Film", "Studio", "Producer", true, "previous.csv")));
         MockMultipartFile file = new MockMultipartFile(
                 "file", "invalid.csv", "text/csv", "year;title\n2000;Film".getBytes());
 

@@ -9,3 +9,4 @@ Projeto criado com assistência de IA, conforme solicitado pela avaliação.
 - O usuário solicitou upload de CSV pelo navegador; a IA adicionou uma página de envio, validação do arquivo, importação no H2 e respostas HTTP/JSON para erros.
 - O usuário solicitou Swagger na URL inicial; a IA adicionou Swagger UI, redirecionamento da raiz e documentação dos endpoints.
 - O usuário esclareceu que deve existir apenas um endpoint; a IA removeu a consulta separada e manteve somente o upload que retorna os resultados.
+- O usuário solicitou que o nome do arquivo enviado fosse armazenado no domínio e na entidade de persistência.
