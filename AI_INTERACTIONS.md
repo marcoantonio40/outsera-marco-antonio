@@ -10,3 +10,4 @@ Projeto criado com assistência de IA, conforme solicitado pela avaliação.
 - O usuário solicitou Swagger na URL inicial; a IA adicionou Swagger UI, redirecionamento da raiz e documentação dos endpoints.
 - O usuário esclareceu que deve existir apenas um endpoint; a IA removeu a consulta separada e manteve somente o upload que retorna os resultados.
 - O usuário solicitou que o nome do arquivo enviado fosse armazenado no domínio e na entidade de persistência.
+- O usuário solicitou logs com códigos e mensagens em todas as classes do fluxo de upload; a IA adicionou logs ao controller, parser, serviços, persistência e tratamento de erros.

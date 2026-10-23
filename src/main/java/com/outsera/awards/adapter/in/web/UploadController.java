@@ -28,7 +28,6 @@ public class UploadController {
     private final MovieCsvParser movieCsvParser;
     private final ImportMoviesUseCase importMovies;
 
-
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Enviar CSV e calcular intervalos",
@@ -38,27 +37,34 @@ public class UploadController {
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
         if (file == null || file.isEmpty()) {
-            log.warn("UPC-UP-00", "Arquivo CSV não enviado ou vazio", file);
+            log.error("UPC-UP-00 | Upload rejeitado: arquivo ausente ou vazio");
             throw new UploadException(HttpStatus.BAD_REQUEST, "Selecione um arquivo CSV não vazio.");
         }
 
-        String filename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "arquivo desconhecido";
+        String filename = file.getOriginalFilename() != null
+                ? file.getOriginalFilename()
+                : "arquivo-desconhecido";
 
-        log.info("UPC-UP-01", "Inicio do processamento do arquivo", Map.of("Nome do arquivo", filename, "Tamanho do arquivo", file.getSize()));
+        Map<String, Object> fileMetadata = Map.of(
+                "fileName", filename,
+                "sizeBytes", file.getSize());
+        log.info("UPC-UP-01 | Início do processamento do upload | {}", fileMetadata);
 
         if (!filename.toLowerCase(Locale.ROOT).endsWith(".csv")) {
-            log.warn("UPC-UP-02", "Arquivo no formato diferente de CSV", file);
+            log.error("UPC-UP-02 | Upload rejeitado: extensão de arquivo inválida | fileName={}", filename);
             throw new UploadException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Envie um arquivo com extensão .csv.");
-
-
         }
 
-        log.info("UPC-UP-03", "Inciar o parse do aqruivo", Map.of("Nome do arquivo", filename));
+        log.info("UPC-UP-03 | Iniciando parse do CSV | fileName={}", filename);
 
         List<Movie> movies = movieCsvParser.parse(file, filename);
+        log.info("UPC-UP-04 | Parse do CSV concluído | fileName={} movieCount={}",
+                filename, movies.size());
 
-        log.info("UPC-UP-04", "Inciar o parse do aqruivo", Map.of("Nome do arquivo", filename));
-
-        return ProducerIntervalsResponse.from(importMovies.importMovies(movies));
+        ProducerIntervalsResponse response =
+                ProducerIntervalsResponse.from(importMovies.importMovies(movies));
+        log.info("UPC-UP-05 | Upload processado com sucesso | fileName={} movieCount={} minCount={} maxCount={}",
+                filename, movies.size(), response.min().size(), response.max().size());
+        return response;
     }
 }

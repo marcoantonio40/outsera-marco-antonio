@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CalculateProducerIntervalsService implements CalculateProducerIntervalsUseCase {
 
     private static final Pattern PRODUCER_SEPARATOR =
@@ -25,8 +27,12 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
 
     @Override
     public ProducerIntervals calculate() {
+        List<Movie> winningMovies = movieCatalog.findWinningMovies();
+        String fileName = winningMovies.isEmpty() ? "desconhecido" : winningMovies.get(0).fileName();
+        log.info("UPC-CA-01 | Iniciando cálculo dos intervalos | fileName={} winningMovieCount={}",
+                fileName, winningMovies.size());
         Map<String, List<Integer>> winsByProducer = new TreeMap<>();
-        for (Movie movie : movieCatalog.findWinningMovies()) {
+        for (Movie movie : winningMovies) {
             for (String producer : PRODUCER_SEPARATOR.split(movie.producers())) {
                 String normalizedProducer = producer.trim();
                 if (!normalizedProducer.isEmpty()) {
@@ -48,6 +54,7 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
         });
 
         if (intervals.isEmpty()) {
+            log.info("UPC-CA-03 | Nenhum intervalo consecutivo encontrado | fileName={}", fileName);
             return new ProducerIntervals(List.of(), List.of());
         }
 
@@ -60,12 +67,15 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
                 .max()
                 .orElseThrow();
 
-        return new ProducerIntervals(
+        ProducerIntervals result = new ProducerIntervals(
                 intervals.stream()
                         .filter(interval -> interval.interval() == minInterval)
                         .toList(),
                 intervals.stream()
                         .filter(interval -> interval.interval() == maxInterval)
                         .toList());
+        log.info("UPC-CA-04 | Intervalos calculados | fileName={} producerCount={} intervalCount={} min={} max={}",
+                fileName, winsByProducer.size(), intervals.size(), minInterval, maxInterval);
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 package com.outsera.awards.adapter.in.web;
 
 import com.outsera.awards.domain.model.Movie;
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
@@ -17,12 +18,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
+@Slf4j
 public class MovieCsvParser {
 
     private static final Set<String> REQUIRED_HEADERS =
             Set.of("year", "title", "studios", "producers", "winner");
 
     public List<Movie> parse(MultipartFile file, String fileName) {
+        log.info("UPC-CSV-01 | Iniciando leitura do CSV | fileName={}", fileName);
         List<Movie> movies = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), 1)) {
@@ -52,16 +55,29 @@ public class MovieCsvParser {
                 }
             }
         } catch (IOException exception) {
+            log.error("UPC-CSV-02 | Falha de leitura do CSV | fileName={} reason={}",
+                    fileName, exception.getMessage());
             throw badCsv("O arquivo CSV está malformado ou não pôde ser lido.");
+        } catch (UploadException exception) {
+            log.error("UPC-CSV-03 | CSV rejeitado | fileName={} reason={}",
+                    fileName, exception.getMessage());
+            throw exception;
         } catch (NumberFormatException exception) {
+            log.error("UPC-CSV-04 | Ano inválido no CSV | fileName={} reason={}",
+                    fileName, exception.getMessage());
             throw badCsv("A coluna year deve conter um ano numérico válido.");
         } catch (IllegalArgumentException exception) {
+            log.error("UPC-CSV-05 | Estrutura inválida no CSV | fileName={} reason={}",
+                    fileName, exception.getMessage());
             throw badCsv("O CSV contém uma linha ou cabeçalho inválido.");
         }
 
         if (movies.isEmpty()) {
+            log.error("UPC-CSV-06 | CSV sem registros | fileName={}", fileName);
             throw badCsv("O CSV não contém registros de filmes.");
         }
+        log.info("UPC-CSV-07 | Leitura do CSV concluída | fileName={} movieCount={}",
+                fileName, movies.size());
         return movies;
     }
 
