@@ -36,6 +36,23 @@ O nome original do arquivo enviado também é armazenado junto a cada filme impo
 
 O CSV deve usar `;` como separador e conter as colunas `year`, `title`, `studios`, `producers` e `winner`. A coluna `winner` aceita `yes`, `no` ou valor vazio. O limite de upload é 10 MB.
 
+## Acesso ao banco de dados
+
+O banco H2 é executado em memória. Para habilitar o console durante o desenvolvimento, adicione ao `src/main/resources/application.properties`:
+
+```properties
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+```
+
+Reinicie a aplicação e acesse `http://localhost:8080/h2-console` enquanto ela estiver em execução. Informe os dados de conexão:
+
+- **JDBC URL:** `jdbc:h2:mem:raspberryawards;DB_CLOSE_DELAY=-1`
+- **Usuário:** `sa`
+- **Senha:** deixe em branco
+
+Depois de conectar, execute, por exemplo, `SELECT * FROM MOVIES;` para consultar os filmes importados. Os dados ficam apenas na memória e são perdidos quando a aplicação é encerrada. Habilite o console somente em desenvolvimento e não o exponha em produção sem proteção.
+
 ## Endpoint
 
 Documentação interativa:
