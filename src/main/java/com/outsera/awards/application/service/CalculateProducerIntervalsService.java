@@ -2,9 +2,9 @@ package com.outsera.awards.application.service;
 
 import com.outsera.awards.application.port.in.CalculateProducerIntervalsUseCase;
 import com.outsera.awards.application.port.out.MovieCatalogPort;
-import com.outsera.awards.domain.dto.MovieDTO;
-import com.outsera.awards.domain.dto.ProducerIntervalDTO;
-import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
+import com.outsera.awards.application.dto.MovieDTO;
+import com.outsera.awards.application.dto.ProducerIntervalDTO;
+import com.outsera.awards.application.dto.ProducerIntervalsDTO;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

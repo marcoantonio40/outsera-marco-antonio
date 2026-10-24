@@ -1,9 +1,11 @@
 package com.outsera.awards.adapter.in.web;
 
+import com.outsera.awards.adapter.in.web.exception.UploadException;
 import com.outsera.awards.application.port.in.ImportMoviesUseCase;
+import com.outsera.awards.adapter.in.csv.MovieCsvParser;
 import com.outsera.awards.adapter.in.web.request.MovieUploadRequest;
 import com.outsera.awards.adapter.in.web.response.ProducerIntervalsResponse;
-import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.application.dto.MovieDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

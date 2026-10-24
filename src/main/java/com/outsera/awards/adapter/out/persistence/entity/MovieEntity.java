@@ -1,6 +1,6 @@
 package com.outsera.awards.adapter.out.persistence.entity;
 
-import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.application.dto.MovieDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

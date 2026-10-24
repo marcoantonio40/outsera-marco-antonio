@@ -1,4 +1,4 @@
-package com.outsera.awards.adapter.in.web;
+package com.outsera.awards.adapter.in.web.exception;
 
 import org.springframework.http.HttpStatus;
 

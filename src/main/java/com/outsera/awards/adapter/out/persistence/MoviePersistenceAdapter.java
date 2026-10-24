@@ -2,7 +2,7 @@ package com.outsera.awards.adapter.out.persistence;
 
 import com.outsera.awards.application.port.out.MovieCatalogPort;
 import com.outsera.awards.adapter.out.persistence.entity.MovieEntity;
-import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.application.dto.MovieDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;

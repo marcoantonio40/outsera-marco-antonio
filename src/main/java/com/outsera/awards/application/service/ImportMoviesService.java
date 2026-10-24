@@ -3,8 +3,8 @@ package com.outsera.awards.application.service;
 import com.outsera.awards.application.port.in.CalculateProducerIntervalsUseCase;
 import com.outsera.awards.application.port.in.ImportMoviesUseCase;
 import com.outsera.awards.application.port.out.MovieCatalogPort;
-import com.outsera.awards.domain.dto.MovieDTO;
-import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
+import com.outsera.awards.application.dto.MovieDTO;
+import com.outsera.awards.application.dto.ProducerIntervalsDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 

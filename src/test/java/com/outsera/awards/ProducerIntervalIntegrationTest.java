@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.outsera.awards.adapter.out.persistence.MovieJpaRepository;
 import com.outsera.awards.adapter.out.persistence.entity.MovieEntity;
-import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.application.dto.MovieDTO;
 import java.io.InputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

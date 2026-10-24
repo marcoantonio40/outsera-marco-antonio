@@ -18,14 +18,15 @@ application/
   port/in/                 Casos de uso oferecidos pela aplicação
   port/out/                Contratos para dependências externas
   service/                 Implementações dos casos de uso
+  dto/                     Dados compartilhados entre as camadas (*DTO)
 adapter/
-  in/web/                  Controller, parser CSV e tratamento de erros
+  in/csv/                  Adaptador de leitura de arquivos CSV
+  in/web/                  Controller e componentes HTTP
     request/               Dados recebidos pela API (*Request)
     response/              Respostas HTTP (*Response)
+    exception/             Exceções e tratamento de erros HTTP
   out/persistence/         Adaptador e repositório JPA
     entity/                Entidades persistidas (*Entity)
-domain/
-  dto/                     Dados compartilhados entre as classes (*DTO)
 ```
 
 O upload é recebido em `MovieUploadRequest`, as respostas usam classes `*Response`, os dados que circulam entre as camadas são representados por DTOs e `MovieEntity` representa os filmes persistidos.

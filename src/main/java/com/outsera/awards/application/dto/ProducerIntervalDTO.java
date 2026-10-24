@@ -1,4 +1,4 @@
-package com.outsera.awards.domain.dto;
+package com.outsera.awards.application.dto;
 
 public record ProducerIntervalDTO(
         String producer,

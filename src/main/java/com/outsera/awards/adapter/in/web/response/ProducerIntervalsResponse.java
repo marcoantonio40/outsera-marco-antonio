@@ -1,6 +1,6 @@
 package com.outsera.awards.adapter.in.web.response;
 
-import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
+import com.outsera.awards.application.dto.ProducerIntervalsDTO;
 import java.util.List;
 
 public record ProducerIntervalsResponse(
