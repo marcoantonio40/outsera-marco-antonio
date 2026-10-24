@@ -1,8 +1,8 @@
 package com.outsera.awards.application.port.in;
 
-import com.outsera.awards.domain.model.ProducerIntervals;
+import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
 
 public interface CalculateProducerIntervalsUseCase {
 
-    ProducerIntervals calculate();
+    ProducerIntervalsDTO calculate();
 }

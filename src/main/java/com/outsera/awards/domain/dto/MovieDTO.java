@@ -1,6 +1,6 @@
-package com.outsera.awards.domain.model;
+package com.outsera.awards.domain.dto;
 
-public record Movie(
+public record MovieDTO(
         int year,
         String title,
         String studios,

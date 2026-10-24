@@ -3,8 +3,8 @@ package com.outsera.awards.application.service;
 import com.outsera.awards.application.port.in.CalculateProducerIntervalsUseCase;
 import com.outsera.awards.application.port.in.ImportMoviesUseCase;
 import com.outsera.awards.application.port.out.MovieCatalogPort;
-import com.outsera.awards.domain.model.Movie;
-import com.outsera.awards.domain.model.ProducerIntervals;
+import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +22,7 @@ public class ImportMoviesService implements ImportMoviesUseCase {
     }
 
     @Override
-    public ProducerIntervals importMovies(List<Movie> movies) {
+    public ProducerIntervalsDTO importMovies(List<MovieDTO> movies) {
         String fileName = movies.isEmpty() ? "desconhecido" : movies.get(0).fileName();
 
         log.info("IMS-IM-00 | Iniciando importação de filmes | fileName={} movieCount={}",
@@ -33,7 +33,7 @@ public class ImportMoviesService implements ImportMoviesUseCase {
         log.info("IMS-IM-01 | Filmes importados | fileName={} movieCount={}",
                 fileName, movies.size());
 
-        ProducerIntervals intervals = calculateProducerIntervals.calculate();
+        ProducerIntervalsDTO intervals = calculateProducerIntervals.calculate();
 
         log.info("IMS-IM-02 | Cálculo concluído | fileName={} minCount={} maxCount={}",
                 fileName, intervals.min().size(), intervals.max().size());

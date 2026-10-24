@@ -1,10 +1,10 @@
 package com.outsera.awards.application.port.in;
 
-import com.outsera.awards.domain.model.Movie;
-import com.outsera.awards.domain.model.ProducerIntervals;
+import com.outsera.awards.domain.dto.MovieDTO;
+import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
 import java.util.List;
 
 public interface ImportMoviesUseCase {
 
-    ProducerIntervals importMovies(List<Movie> movies);
+    ProducerIntervalsDTO importMovies(List<MovieDTO> movies);
 }

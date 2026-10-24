@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.outsera.awards.adapter.out.persistence.MovieJpaRepository;
+import com.outsera.awards.adapter.out.persistence.entity.MovieEntity;
+import com.outsera.awards.domain.dto.MovieDTO;
 import java.io.InputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,10 +44,11 @@ class ProducerIntervalIntegrationTest {
                 .andExpect(jsonPath("$.paths['/api/v1/awards/upload'].post").exists())
                 .andExpect(jsonPath(
                         "$.paths['/api/v1/awards/upload'].post.requestBody.content['multipart/form-data']"
-                                + ".schema.properties.file.type").value("string"))
+                                + ".schema['$ref']").value("#/components/schemas/MovieUploadRequest"))
                 .andExpect(jsonPath(
-                        "$.paths['/api/v1/awards/upload'].post.requestBody.content['multipart/form-data']"
-                                + ".schema.properties.file.format").value("binary"));
+                        "$.components.schemas.MovieUploadRequest.properties.file.type").value("string"))
+                .andExpect(jsonPath(
+                        "$.components.schemas.MovieUploadRequest.properties.file.format").value("binary"));
         mockMvc.perform(get("/api/v1/awards/intervals"))
                 .andExpect(status().isNotFound());
     }
@@ -79,8 +82,8 @@ class ProducerIntervalIntegrationTest {
 
     @Test
     void rejectsInvalidCsvWithoutChangingPreviouslyImportedMovies() throws Exception {
-        movieRepository.save(new com.outsera.awards.adapter.out.persistence.MovieEntity(
-                new com.outsera.awards.domain.model.Movie(
+        movieRepository.save(new MovieEntity(
+                new MovieDTO(
                         2000, "Film", "Studio", "Producer", true, "previous.csv")));
         MockMultipartFile file = new MockMultipartFile(
                 "file", "invalid.csv", "text/csv", "year;title\n2000;Film".getBytes());
@@ -107,7 +110,7 @@ class ProducerIntervalIntegrationTest {
                 .andExpect(status().isOk());
 
         org.assertj.core.api.Assertions.assertThat(movieRepository.findAll())
-                .extracting(movie -> movie.toDomain().winner())
+                .extracting(movie -> movie.toDTO().winner())
                 .containsExactlyInAnyOrder(true, true, false, false);
     }
 
@@ -120,6 +123,13 @@ class ProducerIntervalIntegrationTest {
                 .andExpect(status().isUnsupportedMediaType())
                 .andExpect(jsonPath("$.status").value(415))
                 .andExpect(jsonPath("$.message").value("Envie um arquivo com extensão .csv."));
+    }
+
+    @Test
+    void rejectsUploadWithoutFile() throws Exception {
+        mockMvc.perform(multipart("/api/v1/awards/upload"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selecione um arquivo CSV não vazio."));
     }
 
     @BeforeEach

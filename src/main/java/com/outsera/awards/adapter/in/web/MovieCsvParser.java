@@ -1,6 +1,6 @@
 package com.outsera.awards.adapter.in.web;
 
-import com.outsera.awards.domain.model.Movie;
+import com.outsera.awards.domain.dto.MovieDTO;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,9 +26,9 @@ public class MovieCsvParser {
     private static final Set<String> REQUIRED_HEADERS =
             Set.of("year", "title", "studios", "producers", "winner");
 
-    public List<Movie> parse(MultipartFile file, String fileName) {
+    public List<MovieDTO> parse(MultipartFile file, String fileName) {
         log.info("MCP-PAR-00 | Iniciando leitura do CSV | fileName={}", fileName);
-        List<Movie> movies = new ArrayList<>();
+        List<MovieDTO> movies = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), 1)) {
             int firstCharacter = reader.read();
@@ -88,7 +88,7 @@ public class MovieCsvParser {
         return movies;
     }
 
-    private Movie parseMovie(CSVRecord record, Map<String, Integer> headers, String fileName) {
+    private MovieDTO parseMovie(CSVRecord record, Map<String, Integer> headers, String fileName) {
         int year = Integer.parseInt(record.get(headers.get("year")).trim());
         String title = record.get(headers.get("title")).trim();
         String studios = record.get(headers.get("studios")).trim();
@@ -98,7 +98,7 @@ public class MovieCsvParser {
         if (year < 1 || title.isEmpty() || studios.isEmpty() || producers.isEmpty()) {
             throw badCsv("Cada registro deve informar year, title, studios e producers.");
         }
-        return new Movie(
+        return new MovieDTO(
                 year, title, studios, producers, "yes".equalsIgnoreCase(winnerValue), fileName);
     }
 

@@ -1,13 +1,13 @@
-package com.outsera.awards.adapter.in.web;
+package com.outsera.awards.adapter.in.web.response;
 
-import com.outsera.awards.domain.model.ProducerIntervals;
+import com.outsera.awards.domain.dto.ProducerIntervalsDTO;
 import java.util.List;
 
 public record ProducerIntervalsResponse(
         List<ProducerIntervalResponse> min,
         List<ProducerIntervalResponse> max) {
 
-    public static ProducerIntervalsResponse from(ProducerIntervals intervals) {
+    public static ProducerIntervalsResponse from(ProducerIntervalsDTO intervals) {
         return new ProducerIntervalsResponse(
                 intervals.min().stream()
                         .map(interval -> new ProducerIntervalResponse(

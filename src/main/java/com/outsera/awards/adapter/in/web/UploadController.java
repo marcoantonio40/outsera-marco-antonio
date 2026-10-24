@@ -1,7 +1,9 @@
 package com.outsera.awards.adapter.in.web;
 
 import com.outsera.awards.application.port.in.ImportMoviesUseCase;
-import com.outsera.awards.domain.model.Movie;
+import com.outsera.awards.adapter.in.web.request.MovieUploadRequest;
+import com.outsera.awards.adapter.in.web.response.ProducerIntervalsResponse;
+import com.outsera.awards.domain.dto.MovieDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +35,8 @@ public class UploadController {
             description = "Importa um CSV separado por ponto e vírgula com as colunas "
                     + "year, title, studios, producers e winner.")
     public ProducerIntervalsResponse upload(
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @ModelAttribute MovieUploadRequest request) {
+        var file = request.file();
 
         if (file == null || file.isEmpty()) {
             log.error("UPC-UP-00 | Upload rejeitado: arquivo ausente ou vazio");
@@ -57,7 +59,7 @@ public class UploadController {
 
         log.info("UPC-UP-03 | Iniciando parse do CSV | fileName={}", filename);
 
-        List<Movie> movies = movieCsvParser.parse(file, filename);
+        List<MovieDTO> movies = movieCsvParser.parse(file, filename);
         log.info("UPC-UP-04 | Parse do CSV concluído | fileName={} movieCount={}",
                 filename, movies.size());
 

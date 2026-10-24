@@ -1,7 +1,7 @@
 # IntelliJ IDEA
 .idea/
 *.iml
-out/
+/out/
 
 # Maven / Gradle
 target/

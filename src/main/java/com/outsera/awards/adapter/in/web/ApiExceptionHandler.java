@@ -1,5 +1,6 @@
 package com.outsera.awards.adapter.in.web;
 
+import com.outsera.awards.adapter.in.web.response.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
