@@ -115,20 +115,13 @@ Exemplo de resposta de erro:
 
 ## Acesso ao banco de dados
 
-O H2 usa a URL `jdbc:h2:mem:raspberryawards;DB_CLOSE_DELAY=-1`. Para habilitar o console durante o desenvolvimento, adicione ao `src/main/resources/application.properties`:
-
-```properties
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
-```
-
-Reinicie a aplicação e acesse `http://localhost:8080/h2-console`. Use os seguintes dados:
+O console web do H2 já está habilitado em `http://localhost:8080/h2-console` enquanto a aplicação estiver em execução. Use os seguintes dados:
 
 - **JDBC URL:** `jdbc:h2:mem:raspberryawards;DB_CLOSE_DELAY=-1`
 - **Usuário:** `sa`
 - **Senha:** deixe em branco
 
-Por exemplo, execute `SELECT * FROM MOVIES;` para consultar os filmes importados. Os dados ficam apenas na memória e são perdidos quando a aplicação é encerrada. Habilite o console somente em desenvolvimento e não o exponha em produção sem proteção.
+Por exemplo, execute `SELECT * FROM MOVIES;` para consultar os filmes importados. Os dados ficam apenas na memória e são perdidos quando a aplicação é encerrada. O console permite executar comandos SQL e deve ser usado somente em desenvolvimento; desabilite-o em produção e não o exponha em redes não confiáveis.
 
 ## Testes
 
