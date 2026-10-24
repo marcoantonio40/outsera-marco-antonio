@@ -94,6 +94,24 @@ class ProducerIntervalIntegrationTest {
     }
 
     @Test
+    void readsHeadersWithoutCaseSensitivityAndOnlyYesMarksWinner() throws Exception {
+        String csv = "YEAR;TiTle;STUDIOS;Producers;WINNER\n"
+                + "2000;Film Yes;Studio;Producer;Yes\n"
+                + "2001;Film Lowercase;Studio;Producer;yes\n"
+                + "2002;Film Other;Studio;Producer;anything\n"
+                + "2003;Film Empty;Studio;Producer;\n";
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "movies.csv", "text/csv", csv.getBytes());
+
+        mockMvc.perform(multipart("/api/v1/awards/upload").file(file))
+                .andExpect(status().isOk());
+
+        org.assertj.core.api.Assertions.assertThat(movieRepository.findAll())
+                .extracting(movie -> movie.toDomain().winner())
+                .containsExactlyInAnyOrder(true, true, false, false);
+    }
+
+    @Test
     void rejectsFilesWithoutCsvExtension() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "movies.txt", "text/plain", "content".getBytes());

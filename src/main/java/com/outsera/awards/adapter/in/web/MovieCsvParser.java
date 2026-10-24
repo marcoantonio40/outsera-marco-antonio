@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
@@ -25,11 +27,12 @@ public class MovieCsvParser {
             Set.of("year", "title", "studios", "producers", "winner");
 
     public List<Movie> parse(MultipartFile file, String fileName) {
-        log.info("UPC-CSV-01 | Iniciando leitura do CSV | fileName={}", fileName);
+        log.info("MCP-PAR-00 | Iniciando leitura do CSV | fileName={}", fileName);
         List<Movie> movies = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), 1)) {
             int firstCharacter = reader.read();
+
             if (firstCharacter != '\uFEFF' && firstCharacter != -1) {
                 reader.unread(firstCharacter);
             }
@@ -41,8 +44,12 @@ public class MovieCsvParser {
                     .setIgnoreEmptyLines(true)
                     .build()
                     .parse(reader)) {
-                Map<String, Integer> headers = parser.getHeaderMap();
-                if (headers == null || !headers.keySet().containsAll(REQUIRED_HEADERS)) {
+
+                Map<String, Integer> headers = new HashMap<>();
+                parser.getHeaderMap().forEach(
+                        (header, index) -> headers.put(header.toLowerCase(Locale.ROOT), index));
+
+                if (!headers.keySet().containsAll(REQUIRED_HEADERS)) {
                     throw badCsv(
                             "O CSV deve conter as colunas year, title, studios, producers e winner.");
                 }
@@ -51,50 +58,45 @@ public class MovieCsvParser {
                     if (record.size() != headers.size()) {
                         throw badCsv("O CSV contém uma linha com quantidade inválida de colunas.");
                     }
-                    movies.add(parseMovie(record, fileName));
+                    movies.add(parseMovie(record, headers, fileName));
                 }
             }
         } catch (IOException exception) {
-            log.error("UPC-CSV-02 | Falha de leitura do CSV | fileName={} reason={}",
+            log.error("MCP-PAR-01 | Falha de leitura do CSV | fileName={} reason={}",
                     fileName, exception.getMessage());
             throw badCsv("O arquivo CSV está malformado ou não pôde ser lido.");
         } catch (UploadException exception) {
-            log.error("UPC-CSV-03 | CSV rejeitado | fileName={} reason={}",
+            log.error("MCP-PAR-02 | CSV rejeitado | fileName={} reason={}",
                     fileName, exception.getMessage());
             throw exception;
         } catch (NumberFormatException exception) {
-            log.error("UPC-CSV-04 | Ano inválido no CSV | fileName={} reason={}",
+            log.error("MCP-PAR-03 | Ano inválido no CSV | fileName={} reason={}",
                     fileName, exception.getMessage());
             throw badCsv("A coluna year deve conter um ano numérico válido.");
         } catch (IllegalArgumentException exception) {
-            log.error("UPC-CSV-05 | Estrutura inválida no CSV | fileName={} reason={}",
+            log.error("MCP-PAR-04 | Estrutura inválida no CSV | fileName={} reason={}",
                     fileName, exception.getMessage());
             throw badCsv("O CSV contém uma linha ou cabeçalho inválido.");
         }
 
         if (movies.isEmpty()) {
-            log.error("UPC-CSV-06 | CSV sem registros | fileName={}", fileName);
+            log.error("MCP-PAR-05 | CSV sem registros | fileName={}", fileName);
             throw badCsv("O CSV não contém registros de filmes.");
         }
-        log.info("UPC-CSV-07 | Leitura do CSV concluída | fileName={} movieCount={}",
+        log.info("MCP-PAR-06 | Leitura do CSV concluída | fileName={} movieCount={}",
                 fileName, movies.size());
         return movies;
     }
 
-    private Movie parseMovie(CSVRecord record, String fileName) {
-        int year = Integer.parseInt(record.get("year").trim());
-        String title = record.get("title").trim();
-        String studios = record.get("studios").trim();
-        String producers = record.get("producers").trim();
-        String winnerValue = record.get("winner").trim();
+    private Movie parseMovie(CSVRecord record, Map<String, Integer> headers, String fileName) {
+        int year = Integer.parseInt(record.get(headers.get("year")).trim());
+        String title = record.get(headers.get("title")).trim();
+        String studios = record.get(headers.get("studios")).trim();
+        String producers = record.get(headers.get("producers")).trim();
+        String winnerValue = record.get(headers.get("winner")).trim();
 
         if (year < 1 || title.isEmpty() || studios.isEmpty() || producers.isEmpty()) {
             throw badCsv("Cada registro deve informar year, title, studios e producers.");
-        }
-        if (!winnerValue.isEmpty()
-                && !winnerValue.equalsIgnoreCase("yes")
-                && !winnerValue.equalsIgnoreCase("no")) {
-            throw badCsv("A coluna winner deve conter yes, no ou ficar vazia.");
         }
         return new Movie(
                 year, title, studios, producers, "yes".equalsIgnoreCase(winnerValue), fileName);

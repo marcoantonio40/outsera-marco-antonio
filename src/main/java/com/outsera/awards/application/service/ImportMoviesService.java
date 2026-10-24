@@ -24,14 +24,20 @@ public class ImportMoviesService implements ImportMoviesUseCase {
     @Override
     public ProducerIntervals importMovies(List<Movie> movies) {
         String fileName = movies.isEmpty() ? "desconhecido" : movies.get(0).fileName();
-        log.info("UPC-IM-01 | Iniciando importação de filmes | fileName={} movieCount={}",
+
+        log.info("IMS-IM-00 | Iniciando importação de filmes | fileName={} movieCount={}",
                 fileName, movies.size());
+
         movieCatalog.replaceAll(movies);
-        log.info("UPC-IM-02 | Filmes importados | fileName={} movieCount={}",
+
+        log.info("IMS-IM-01 | Filmes importados | fileName={} movieCount={}",
                 fileName, movies.size());
+
         ProducerIntervals intervals = calculateProducerIntervals.calculate();
-        log.info("UPC-IM-03 | Cálculo concluído | fileName={} minCount={} maxCount={}",
+
+        log.info("IMS-IM-02 | Cálculo concluído | fileName={} minCount={} maxCount={}",
                 fileName, intervals.min().size(), intervals.max().size());
+
         return intervals;
     }
 }

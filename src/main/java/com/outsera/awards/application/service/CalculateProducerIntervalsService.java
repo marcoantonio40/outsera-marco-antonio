@@ -29,7 +29,7 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
     public ProducerIntervals calculate() {
         List<Movie> winningMovies = movieCatalog.findWinningMovies();
         String fileName = winningMovies.isEmpty() ? "desconhecido" : winningMovies.get(0).fileName();
-        log.info("UPC-CA-01 | Iniciando cálculo dos intervalos | fileName={} winningMovieCount={}",
+        log.info("CPIS-CAL-00 | Iniciando cálculo dos intervalos | fileName={} winningMovieCount={}",
                 fileName, winningMovies.size());
         Map<String, List<Integer>> winsByProducer = new TreeMap<>();
         for (Movie movie : winningMovies) {
@@ -54,7 +54,7 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
         });
 
         if (intervals.isEmpty()) {
-            log.info("UPC-CA-03 | Nenhum intervalo consecutivo encontrado | fileName={}", fileName);
+            log.info("CPIS-CAL-01 | Nenhum intervalo consecutivo encontrado | fileName={}", fileName);
             return new ProducerIntervals(List.of(), List.of());
         }
 
@@ -74,7 +74,7 @@ public class CalculateProducerIntervalsService implements CalculateProducerInter
                 intervals.stream()
                         .filter(interval -> interval.interval() == maxInterval)
                         .toList());
-        log.info("UPC-CA-04 | Intervalos calculados | fileName={} producerCount={} intervalCount={} min={} max={}",
+        log.info("CPIS-CAL-02 | Intervalos calculados | fileName={} producerCount={} intervalCount={} min={} max={}",
                 fileName, winsByProducer.size(), intervals.size(), minInterval, maxInterval);
         return result;
     }

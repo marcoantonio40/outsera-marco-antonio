@@ -13,7 +13,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(UploadException.class)
     public ResponseEntity<ApiErrorResponse> handleUploadException(UploadException exception) {
-        log.error("UPC-HTTP-01 | Requisição rejeitada | status={} reason={}",
+        log.error("AEH-HUE-00 | Requisição rejeitada | status={} reason={}",
                 exception.getStatus().value(), exception.getMessage());
         return error(exception.getStatus(), exception.getMessage());
     }
@@ -21,7 +21,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiErrorResponse> handleFileTooLarge(
             MaxUploadSizeExceededException exception) {
-        log.error("UPC-HTTP-02 | Upload rejeitado: tamanho máximo excedido", exception);
+        log.error("AEH-HFTL-00 | Upload rejeitado: tamanho máximo excedido", exception);
         return error(
                 HttpStatus.PAYLOAD_TOO_LARGE,
                 "O arquivo excede o limite máximo de 10 MB.");
