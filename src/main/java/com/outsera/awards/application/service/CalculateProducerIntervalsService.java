@@ -11,19 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CalculateProducerIntervalsService implements CalculateProducerIntervalsUseCase {
 
     private static final Pattern PRODUCER_SEPARATOR =
             Pattern.compile("\\s*,\\s*(?:and\\s+)?|\\s+and\\s+");
 
     private final MovieCatalogPort movieCatalog;
-
-    public CalculateProducerIntervalsService(MovieCatalogPort movieCatalog) {
-        this.movieCatalog = movieCatalog;
-    }
 
     @Override
     public ProducerIntervalsDTO calculate() {

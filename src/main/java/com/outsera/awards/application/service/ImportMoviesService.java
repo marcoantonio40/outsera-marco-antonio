@@ -6,20 +6,15 @@ import com.outsera.awards.application.port.out.MovieCatalogPort;
 import com.outsera.awards.application.dto.MovieDTO;
 import com.outsera.awards.application.dto.ProducerIntervalsDTO;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ImportMoviesService implements ImportMoviesUseCase {
 
     private final MovieCatalogPort movieCatalog;
     private final CalculateProducerIntervalsUseCase calculateProducerIntervals;
-
-    public ImportMoviesService(
-            MovieCatalogPort movieCatalog,
-            CalculateProducerIntervalsUseCase calculateProducerIntervals) {
-        this.movieCatalog = movieCatalog;
-        this.calculateProducerIntervals = calculateProducerIntervals;
-    }
 
     @Override
     public ProducerIntervalsDTO importMovies(List<MovieDTO> movies) {
