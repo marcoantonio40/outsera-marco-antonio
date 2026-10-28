@@ -113,6 +113,26 @@ class ProducerIntervalIntegrationTest {
     }
 
     @Test
+    void preservesAllTiedMinimumAndMaximumIntervals() throws Exception {
+        writeCsv("ties.csv", "year;title;studios;producers;winner\n"
+                + "2000;Film 1;Studio;Alpha and Beta;yes\n"
+                + "2002;Film 2;Studio;Alpha and Beta;yes\n"
+                + "2005;Film 3;Studio;Alpha;yes\n"
+                + "2008;Film 4;Studio;Beta;yes\n");
+
+        mockMvc.perform(post("/api/v1/awards/process"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.min", hasSize(2)))
+                .andExpect(jsonPath("$.min[0].producer").value("Alpha"))
+                .andExpect(jsonPath("$.min[0].interval").value(2))
+                .andExpect(jsonPath("$.min[1].producer").value("Beta"))
+                .andExpect(jsonPath("$.min[1].interval").value(2))
+                .andExpect(jsonPath("$.max", hasSize(1)))
+                .andExpect(jsonPath("$.max[0].producer").value("Beta"))
+                .andExpect(jsonPath("$.max[0].interval").value(6));
+    }
+
+    @Test
     void processesOnlyTheMostRecentlyModifiedCsv() throws Exception {
         writeCsv("older.csv", "year;title;studios;producers;winner\n2000;Older;Studio;Producer;yes");
         writeCsv("newer.CSV", "year;title;studios;producers;winner\n2001;Newer;Studio;Producer;yes");
