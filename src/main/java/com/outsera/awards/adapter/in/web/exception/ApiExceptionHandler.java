@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 @Slf4j
@@ -18,15 +17,6 @@ public class ApiExceptionHandler {
         log.error("AEH-HUE-00 | Requisição rejeitada | status={} reason={}",
                 exception.getStatus().value(), exception.getMessage());
         return error(exception.getStatus(), exception.getMessage());
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ApiErrorResponse> handleFileTooLarge(
-            MaxUploadSizeExceededException exception) {
-        log.error("AEH-HFTL-00 | Upload rejeitado: tamanho máximo excedido", exception);
-        return error(
-                HttpStatus.PAYLOAD_TOO_LARGE,
-                "O arquivo excede o limite máximo de 10 MB.");
     }
 
     private ResponseEntity<ApiErrorResponse> error(

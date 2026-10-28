@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Slf4j
@@ -27,11 +28,12 @@ public class MovieCsvParser {
     private static final Set<String> REQUIRED_HEADERS =
             Set.of("year", "title", "studios", "producers", "winner");
 
-    public List<MovieDTO> parse(MultipartFile file, String fileName) {
+    public List<MovieDTO> parse(Path file) {
+        String fileName = file.getFileName().toString();
         log.info("MCP-PAR-00 | Iniciando leitura do CSV | fileName={}", fileName);
         List<MovieDTO> movies = new ArrayList<>();
         try (PushbackReader reader = new PushbackReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), 1)) {
+                new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8), 1)) {
             int firstCharacter = reader.read();
 
             if (firstCharacter != '\uFEFF' && firstCharacter != -1) {

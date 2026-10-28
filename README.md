@@ -1,6 +1,6 @@
 # Raspberry Awards API
 
-API REST para importar uma lista de filmes em CSV e calcular os menores e maiores intervalos entre vitórias consecutivas de produtores na categoria Pior Filme do Golden Raspberry Awards.
+API REST que processa um arquivo CSV colocado em uma pasta local e calcula os menores e maiores intervalos entre vitórias consecutivas de produtores na categoria Pior Filme do Golden Raspberry Awards.
 
 ## Requisitos
 
@@ -29,7 +29,7 @@ adapter/
     entity/                Entidades persistidas (*Entity)
 ```
 
-O upload é recebido em `MovieUploadRequest`, as respostas usam classes `*Response`, os dados que circulam entre as camadas são representados por DTOs e `MovieEntity` representa os filmes persistidos.
+O endpoint não recebe o arquivo. O `CsvFolderProcessor` localiza o CSV mais recente na pasta configurada, e `MovieCsvParser` lê o arquivo diretamente do sistema de arquivos. As respostas usam classes `*Response`, os dados que circulam entre as camadas são representados por DTOs e `MovieEntity` representa os filmes persistidos.
 
 ## Como executar
 
@@ -39,7 +39,14 @@ Na raiz do projeto, inicie a aplicação:
 mvn spring-boot:run
 ```
 
-Acesse `http://localhost:8080` para abrir o Swagger UI. A aplicação começa sem filmes importados. Cada CSV válido substitui o conjunto de filmes da importação anterior, e o nome original do arquivo é armazenado junto a cada filme.
+A aplicação procura arquivos na pasta `arquivos_para_processar`, relativa ao diretório em que o processo foi iniciado. Crie essa pasta na raiz do projeto e coloque nela um ou mais CSVs:
+
+```bash
+mkdir -p arquivos_para_processar
+cp /caminho/para/filmes.csv arquivos_para_processar/
+```
+
+Acesse `http://localhost:8080` para abrir o Swagger UI e disparar o processamento. A cada chamada, será processado somente o arquivo `.csv` com data de modificação mais recente; em caso de empate, o nome é usado para desempatar. O arquivo permanece na pasta e pode ser processado novamente. Cada CSV válido substitui o conjunto de filmes da importação anterior, e o nome do arquivo é armazenado junto a cada filme.
 
 ## CSV aceito
 
@@ -51,7 +58,7 @@ year;title;studios;producers;winner
 1991;Outro filme;Outro estúdio;Produtor de exemplo;
 ```
 
-Cada linha precisa conter um ano numérico positivo e valores não vazios para `title`, `studios` e `producers`. Em `winner`, somente `yes` (em qualquer combinação de maiúsculas e minúsculas) é considerado vencedor; qualquer outro valor, inclusive `no` ou vazio, é considerado não vencedor. O CSV deve conter pelo menos um registro. O tamanho máximo do arquivo é 10 MB.
+Cada linha precisa conter um ano numérico positivo e valores não vazios para `title`, `studios` e `producers`. Em `winner`, somente `yes` (em qualquer combinação de maiúsculas e minúsculas) é considerado vencedor; qualquer outro valor, inclusive `no` ou vazio, é considerado não vencedor. O CSV deve conter pelo menos um registro. Como o arquivo é lido diretamente do sistema de arquivos e não enviado como requisição multipart, o limite multipart de 10 MB não se aplica. O tamanho efetivamente processável ainda depende da memória disponível, já que o parser atual mantém os registros em memória.
 
 Os produtores listados em uma linha são separados por vírgula e/ou pela palavra `and`. Para cada produtor, a API ordena os anos de vitória e calcula intervalos entre vitórias consecutivas.
 
@@ -64,19 +71,18 @@ http://localhost:8080
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Envie o arquivo no campo multipart chamado `file`:
+Coloque o arquivo na pasta e faça uma requisição sem corpo para iniciar o processamento:
 
 ```http
-POST http://localhost:8080/api/v1/awards/upload
-Content-Type: multipart/form-data
+POST http://localhost:8080/api/v1/awards/process
 ```
 
 | Código HTTP | Situação | Resposta |
 |---|---|---|
-| `200 OK` | CSV válido processado | JSON com os intervalos mínimo e máximo |
-| `400 Bad Request` | Arquivo ausente/vazio ou CSV inválido | JSON com `status`, `error` e `message` |
-| `413 Payload Too Large` | Arquivo acima do limite de 10 MB | JSON com `status`, `error` e `message` |
-| `415 Unsupported Media Type` | Arquivo sem extensão `.csv` | JSON com `status`, `error` e `message` |
+| `200 OK` | CSV mais recente válido processado | JSON com os intervalos mínimo e máximo |
+| `400 Bad Request` | CSV inválido ou vazio | JSON com `status`, `error` e `message` |
+| `404 Not Found` | Não há CSV na pasta configurada | JSON com `status`, `error` e `message` |
+| `500 Internal Server Error` | Não foi possível acessar a pasta | JSON com `status`, `error` e `message` |
 
 Exemplo de resposta:
 
@@ -131,7 +137,7 @@ Execute a suíte de testes com:
 mvn test
 ```
 
-Os testes de integração cobrem o endpoint e a documentação OpenAPI, o processamento de CSV válido, a comparação de cabeçalhos sem diferenciar maiúsculas de minúsculas, o tratamento da coluna `winner` e as respostas para uploads inválidos.
+Os testes de integração cobrem o endpoint e a documentação OpenAPI, a seleção do CSV mais recente, o processamento de CSV válido, a comparação de cabeçalhos sem diferenciar maiúsculas de minúsculas, o tratamento da coluna `winner` e as respostas para arquivos inválidos ou ausentes.
 
 ## Registro de uso de IA
 

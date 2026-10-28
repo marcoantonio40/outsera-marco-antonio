@@ -7,6 +7,9 @@
 target/
 build/
 
+# Files provided for processing are local and must not be committed
+/arquivos_para_processar/
+
 # Java
 *.class
 *.jar
